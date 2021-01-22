@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:mercury/core/providers/crud_provider.dart';
-import 'package:mercury/core/providers/customers_provider.dart';
+import 'package:mercury/core/providers/Ballooms_provider.dart';
 import 'package:mercury/core/providers/enum_states.dart';
 import 'package:mercury/misc/colors.dart';
 import 'package:mercury/misc/sized.dart';
-import 'package:mercury/ui/views/customers/form_customers_page.dart';
+import 'package:mercury/ui/views/Ballooms/form_Ballooms_page.dart';
 import 'package:mercury/widgets/shared/dialogs.dart';
 import 'package:mercury/widgets/shared/inputs.dart';
 import 'package:mercury/widgets/shared/widgets.dart';
 import 'package:provider/provider.dart';
 
-class CustomersPage extends StatefulWidget {
-  const CustomersPage({Key key}) : super(key: key);
+class BalloomsPage extends StatefulWidget {
+  const BalloomsPage({Key key}) : super(key: key);
 
   @override
-  _CustomersPageState createState() => _CustomersPageState();
+  _BalloomsPageState createState() => _BalloomsPageState();
 }
 
-class _CustomersPageState extends State<CustomersPage> {
+class _BalloomsPageState extends State<BalloomsPage> {
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -46,7 +46,7 @@ class _CustomersPageState extends State<CustomersPage> {
           icon: Icon(Icons.add),
           foregroundColor: MyColors.primary,
           label: Text(
-            "Crear cliente",
+            "Crear Balón",
             style: TextStyle(color: MyColors.primary),
           ),
           onPressed: () async {
@@ -54,24 +54,24 @@ class _CustomersPageState extends State<CustomersPage> {
               PageRouteBuilder(
                 opaque: false,
                 pageBuilder: (BuildContext context, _, __) =>
-                    FormCustomerPage(),
+                    FormBalloomsPage(),
               ),
             );
             if (result is bool) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                createSnackBar(context, "Cliente creado");
+                createSnackBar(context, "Balón creado");
               });
             }
           },
         ),
         body: TabBarView(
-          children: [bodyCustomersHome(), bodyListCustomers()],
+          children: [bodyBalloomsHome(), bodyListBallooms()],
         ),
       ),
     );
   }
 
-  Widget bodyCustomersHome() {
+  Widget bodyBalloomsHome() {
     var size = MediaQuery.of(context).size;
     final double itemHeight = size.height;
     final double itemWidth = size.width * 1.8;
@@ -112,8 +112,8 @@ class _CustomersPageState extends State<CustomersPage> {
     );
   }
 
-  Widget bodyListCustomers() {
-    Provider.of<CustomersProvider>(context, listen: false).getCustomers();
+  Widget bodyListBallooms() {
+    Provider.of<BalloomsProvider>(context, listen: false).getBallooms();
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -125,7 +125,7 @@ class _CustomersPageState extends State<CustomersPage> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Listado de clientes",
+                "Listado de balones",
                 style: TextStyle(
                     color: MyColors.secondary, fontSize: MySizes.title6),
               ),
@@ -137,24 +137,24 @@ class _CustomersPageState extends State<CustomersPage> {
                 hintText: "¿A quién estás buscando?",
                 controller: searchController,
                 onChanged: (value) {
-                  Provider.of<CustomersProvider>(context, listen: false)
+                  Provider.of<BalloomsProvider>(context, listen: false)
                       .searchCustomer(value);
                 }),
             SizedBox(
               height: 20,
             ),
             mounted
-                ? Consumer<CustomersProvider>(builder: (context, value, _) {
+                ? Consumer<BalloomsProvider>(builder: (context, value, _) {
                     print(value.state);
-                    print(value.customers);
+                    print(value.ballooms);
                     if (value.state == ProviderStates.done) {
                       print("hola");
-                      if (value.dirtyCustomers == null) {
+                      if (value.dirtyBallooms == null) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
                       } else {
-                        if (value.dirtyCustomers.length > 0) {
+                        if (value.dirtyBallooms.length > 0) {
                           return ListView.separated(
                               separatorBuilder: (BuildContext context,
                                       int index) =>
@@ -166,17 +166,17 @@ class _CustomersPageState extends State<CustomersPage> {
                                     endIndent:
                                         MediaQuery.of(context).size.width * 0.4,
                                   ),
-                              itemCount: value.dirtyCustomers.length,
+                              itemCount: value.dirtyBallooms.length,
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (_, index) {
                                 return ListTile(
-                                  title: Text(value.dirtyCustomers
+                                  title: Text(value.dirtyBallooms
                                       .elementAt(index)
                                       .name),
-                                  subtitle: Text(value.dirtyCustomers
+                                  subtitle: Text(value.dirtyBallooms
                                           .elementAt(index)
-                                          .lastName ??
+                                          .type ??
                                       ""),
                                   tileColor: MyColors.transparent,
                                   shape: RoundedRectangleBorder(
@@ -196,8 +196,8 @@ class _CustomersPageState extends State<CustomersPage> {
                                                 pageBuilder:
                                                     (BuildContext context, _,
                                                             __) =>
-                                                        FormCustomerPage(
-                                                  customer: value.dirtyCustomers
+                                                        FormBalloomsPage(
+                                                  balloom: value.dirtyBallooms
                                                       .elementAt(index),
                                                 ),
                                               ),
@@ -206,7 +206,7 @@ class _CustomersPageState extends State<CustomersPage> {
                                               WidgetsBinding.instance
                                                   .addPostFrameCallback((_) {
                                                 createSnackBar(context,
-                                                    "Cliente actualizado");
+                                                    "Balón actualizado");
                                               });
                                             }
                                           }),
@@ -214,34 +214,34 @@ class _CustomersPageState extends State<CustomersPage> {
                                           icon: Icon(Icons.delete),
                                           color: MyColors.error,
                                           onPressed: () async {
-                                            print("delete user");
+                                            print("delete balloom");
                                             bool response =
                                                 await showQuestionDialog(
                                                     context: context,
                                                     title: "Importante",
                                                     content:
-                                                        "¿Estás seguro de eliminar a ${value.dirtyCustomers.elementAt(index).name}?",
+                                                        "¿Estás seguro de eliminar a ${value.dirtyBallooms.elementAt(index).name}?",
                                                     textOk: "Si, eliminar");
                                             print("la respuesta es:$response");
                                             if (response) {
                                               Provider.of<CRUDProvider>(context,
                                                       listen: false)
                                                   .deleteEntity(
-                                                      "customers",
-                                                      value.dirtyCustomers
+                                                      "ballooms",
+                                                      value.dirtyBallooms
                                                           .elementAt(index)
                                                           .id);
                                               WidgetsBinding.instance
                                                   .addPostFrameCallback((_) {
                                                 createSnackBar(context,
-                                                    "Cliente eliminado");
+                                                    "Balón eliminado");
                                               });
                                             }
                                           })
                                     ],
                                   ),
                                   onTap: () async {
-                                    print(value.dirtyCustomers
+                                    print(value.dirtyBallooms
                                         .elementAt(index)
                                         .toString());
                                   },

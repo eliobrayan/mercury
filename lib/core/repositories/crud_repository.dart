@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:mercury/core/Exceptions/exceptions.dart';
-import 'package:mercury/core/repositories/user_repository.dart';
+import 'package:mercury/models/object_model.dart';
 
 class CRUDRepository {
   createEntity(dynamic entity, String reference) async {

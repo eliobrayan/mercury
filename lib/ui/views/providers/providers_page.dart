@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:mercury/core/providers/crud_provider.dart';
 import 'package:mercury/core/providers/customers_provider.dart';
 import 'package:mercury/core/providers/enum_states.dart';
+import 'package:mercury/core/providers/provider_provider.dart';
 import 'package:mercury/misc/colors.dart';
 import 'package:mercury/misc/sized.dart';
 import 'package:mercury/ui/views/customers/form_customers_page.dart';
+import 'package:mercury/ui/views/providers/form_providers_page.dart';
 import 'package:mercury/widgets/shared/dialogs.dart';
 import 'package:mercury/widgets/shared/inputs.dart';
 import 'package:mercury/widgets/shared/widgets.dart';
 import 'package:provider/provider.dart';
 
-class CustomersPage extends StatefulWidget {
-  const CustomersPage({Key key}) : super(key: key);
+class ProvidersPage extends StatefulWidget {
+  const ProvidersPage({Key key}) : super(key: key);
 
   @override
-  _CustomersPageState createState() => _CustomersPageState();
+  _ProvidersPageState createState() => _ProvidersPageState();
 }
 
-class _CustomersPageState extends State<CustomersPage> {
+class _ProvidersPageState extends State<ProvidersPage> {
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -46,7 +48,7 @@ class _CustomersPageState extends State<CustomersPage> {
           icon: Icon(Icons.add),
           foregroundColor: MyColors.primary,
           label: Text(
-            "Crear cliente",
+            "Crear proveedor",
             style: TextStyle(color: MyColors.primary),
           ),
           onPressed: () async {
@@ -54,12 +56,12 @@ class _CustomersPageState extends State<CustomersPage> {
               PageRouteBuilder(
                 opaque: false,
                 pageBuilder: (BuildContext context, _, __) =>
-                    FormCustomerPage(),
+                    FormProvidersPage(),
               ),
             );
             if (result is bool) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                createSnackBar(context, "Cliente creado");
+                createSnackBar(context, "Proveedor creado");
               });
             }
           },
@@ -113,7 +115,7 @@ class _CustomersPageState extends State<CustomersPage> {
   }
 
   Widget bodyListCustomers() {
-    Provider.of<CustomersProvider>(context, listen: false).getCustomers();
+    Provider.of<ProviderProvider>(context, listen: false).getProviders();
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -125,7 +127,7 @@ class _CustomersPageState extends State<CustomersPage> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Listado de clientes",
+                "Listado de proveedores",
                 style: TextStyle(
                     color: MyColors.secondary, fontSize: MySizes.title6),
               ),
@@ -137,24 +139,24 @@ class _CustomersPageState extends State<CustomersPage> {
                 hintText: "¿A quién estás buscando?",
                 controller: searchController,
                 onChanged: (value) {
-                  Provider.of<CustomersProvider>(context, listen: false)
+                  Provider.of<ProviderProvider>(context, listen: false)
                       .searchCustomer(value);
                 }),
             SizedBox(
               height: 20,
             ),
             mounted
-                ? Consumer<CustomersProvider>(builder: (context, value, _) {
+                ? Consumer<ProviderProvider>(builder: (context, value, _) {
                     print(value.state);
-                    print(value.customers);
+                    print(value.providers);
                     if (value.state == ProviderStates.done) {
                       print("hola");
-                      if (value.dirtyCustomers == null) {
+                      if (value.dirtyproviders == null) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
                       } else {
-                        if (value.dirtyCustomers.length > 0) {
+                        if (value.dirtyproviders.length > 0) {
                           return ListView.separated(
                               separatorBuilder: (BuildContext context,
                                       int index) =>
@@ -166,15 +168,15 @@ class _CustomersPageState extends State<CustomersPage> {
                                     endIndent:
                                         MediaQuery.of(context).size.width * 0.4,
                                   ),
-                              itemCount: value.dirtyCustomers.length,
+                              itemCount: value.dirtyproviders.length,
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (_, index) {
                                 return ListTile(
-                                  title: Text(value.dirtyCustomers
+                                  title: Text(value.dirtyproviders
                                       .elementAt(index)
                                       .name),
-                                  subtitle: Text(value.dirtyCustomers
+                                  subtitle: Text(value.dirtyproviders
                                           .elementAt(index)
                                           .lastName ??
                                       ""),
@@ -196,8 +198,8 @@ class _CustomersPageState extends State<CustomersPage> {
                                                 pageBuilder:
                                                     (BuildContext context, _,
                                                             __) =>
-                                                        FormCustomerPage(
-                                                  customer: value.dirtyCustomers
+                                                        FormProvidersPage(
+                                                  provider: value.dirtyproviders
                                                       .elementAt(index),
                                                 ),
                                               ),
@@ -206,7 +208,7 @@ class _CustomersPageState extends State<CustomersPage> {
                                               WidgetsBinding.instance
                                                   .addPostFrameCallback((_) {
                                                 createSnackBar(context,
-                                                    "Cliente actualizado");
+                                                    "Proveedor actualizado");
                                               });
                                             }
                                           }),
@@ -214,34 +216,34 @@ class _CustomersPageState extends State<CustomersPage> {
                                           icon: Icon(Icons.delete),
                                           color: MyColors.error,
                                           onPressed: () async {
-                                            print("delete user");
+                                            print("delete provider");
                                             bool response =
                                                 await showQuestionDialog(
                                                     context: context,
                                                     title: "Importante",
                                                     content:
-                                                        "¿Estás seguro de eliminar a ${value.dirtyCustomers.elementAt(index).name}?",
+                                                        "¿Estás seguro de eliminar a ${value.dirtyproviders.elementAt(index).name}?",
                                                     textOk: "Si, eliminar");
                                             print("la respuesta es:$response");
                                             if (response) {
                                               Provider.of<CRUDProvider>(context,
                                                       listen: false)
                                                   .deleteEntity(
-                                                      "customers",
-                                                      value.dirtyCustomers
+                                                      "providers",
+                                                      value.dirtyproviders
                                                           .elementAt(index)
                                                           .id);
                                               WidgetsBinding.instance
                                                   .addPostFrameCallback((_) {
                                                 createSnackBar(context,
-                                                    "Cliente eliminado");
+                                                    "Proveedor eliminado");
                                               });
                                             }
                                           })
                                     ],
                                   ),
                                   onTap: () async {
-                                    print(value.dirtyCustomers
+                                    print(value.dirtyproviders
                                         .elementAt(index)
                                         .toString());
                                   },
@@ -255,7 +257,7 @@ class _CustomersPageState extends State<CustomersPage> {
                     if (value.state == ProviderStates.error) {
                       return Text("Error");
                     }
-                    return Text("Lista de clientes");
+                    return Text("Lista de proveedores");
                   })
                 : Text("hola")
           ],

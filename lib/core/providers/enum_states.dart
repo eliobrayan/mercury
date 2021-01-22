@@ -1,1 +1,1 @@
-enum ProviderStates { loading, idle, done, error }
+enum ProviderStates { loading, idle, done, error, completeTask }

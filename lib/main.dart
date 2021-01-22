@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mercury/core/providers/Ballooms_provider.dart';
 import 'package:mercury/core/providers/auth_provider.dart';
 import 'package:mercury/core/providers/crud_provider.dart';
 import 'package:mercury/core/providers/customers_provider.dart';
 import 'package:mercury/core/providers/home_view_model.dart';
+import 'package:mercury/core/providers/provider_provider.dart';
 import 'package:mercury/core/providers/register_provider.dart';
 import 'package:mercury/core/providers/user_provider.dart';
 import 'package:mercury/misc/colors.dart';
@@ -46,6 +48,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => CustomersProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProviderProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BalloomsProvider(),
         )
       ],
       child: MaterialApp(

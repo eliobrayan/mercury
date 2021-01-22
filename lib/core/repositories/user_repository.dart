@@ -108,6 +108,44 @@ class UserRepository {
     }
   }
 
+  Future<void> changePassword(String newPassword) async {
+    print("changing password");
+    try {
+      User userAuth = FirebaseAuth.instance.currentUser;
+      userAuth.updatePassword(newPassword);
+    } catch (e) {
+      String response;
+      if (e is FirebaseAuthException) {
+        if (e.code == 'weak-password') {
+          response = "La contraseña es muy débil";
+        } else if (e.code == 'email-already-in-use') {
+          response = "El correo ingresado ya existe";
+        } else if (e.code == 'invalid-email') {
+          response = "El correo ingresado es inválido";
+        } else {
+          response = "Ocurrió un error al registrar";
+        }
+      } else if (e is FirestoreException) {
+        response = e.message;
+      } else if (e is PlatformException) {
+        if (e.code == 'weak-password') {
+          response = "La contraseña es muy débil";
+        } else if (e.code == 'email-already-in-use') {
+          response = "El correo ingresado ya existe";
+        } else if (e.code == 'invalid-email') {
+          response = "El correo ingresado es inválido";
+        } else {
+          response = "Ocurrió un error al registrar";
+        }
+      } else {
+        response = "Error con el servidor";
+      }
+
+      print("Login Exception: $response");
+      throw LoginException(response);
+    }
+  }
+
   //actualizar en firestore
   Future<UserModel> updateInFirestore(UserModel user) async {
     try {

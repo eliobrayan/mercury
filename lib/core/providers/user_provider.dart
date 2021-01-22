@@ -9,6 +9,7 @@ class UserProvider extends ChangeNotifier {
   UserModel user;
   UserRepository repository = UserRepository();
   String errorMsg;
+  String msg;
   ProviderStates state = ProviderStates.idle;
   createUser(
       String email, String name, String lastName, String password) async {
@@ -21,7 +22,6 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
     } on LoginException catch (e) {
       errorMsg = e.message;
-
       state = ProviderStates.error;
       notifyListeners();
     }
@@ -46,11 +46,12 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  updateUser() {
+  updateUser(UserModel newUser) async {
     try {
-      repository.updateInFirestore(user).then((value) {
+      await repository.updateInFirestore(newUser).then((value) {
         user = value;
         state = ProviderStates.done;
+        msg = "Datos actualizados";
         notifyListeners();
       });
     } on FirebaseException catch (e) {
@@ -60,9 +61,24 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  deleteUser() {
+  Future<void> updatePassword(String newPassword, String oldPassword) async {
     try {
-      repository.deleteUserFromFirestore().then((value) {
+      String email = FirebaseAuth.instance.currentUser.email;
+      await repository.loginWithEmailAndPassword(email, oldPassword);
+      await repository.changePassword(newPassword);
+      state = ProviderStates.done;
+      msg = "Contraseña actualizada";
+      notifyListeners();
+    } on LoginException catch (e) {
+      errorMsg = "No se pudo actualizar las contraseñas";
+      state = ProviderStates.error;
+      notifyListeners();
+    }
+  }
+
+  deleteUser() async {
+    try {
+      await repository.deleteUserFromFirestore().then((value) {
         state = ProviderStates.done;
         notifyListeners();
       });

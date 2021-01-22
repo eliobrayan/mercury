@@ -233,39 +233,34 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget buttonsSection(BuildContext context1) {
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: roundedButton(
-                  text: "Registrar",
-                  color: MyColors.secondary,
-                  textColor: MyColors.primaryLight,
-                  padding: EdgeInsets.all(15),
-                  radius: 30,
-                  action: () {
-                    if (_formKey.currentState.validate()) {
-                      print("Registrando");
-                      Provider.of<UserProvider>(context, listen: false)
-                          .createUser(
-                              emailController.text.trim(),
-                              nameController.text.trim(),
-                              lastNameController.text.trim(),
-                              passwordController.text.trim());
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        createSnackBar(context1, "Registrando");
-                      });
-                      // showLoading.showLoadingDialog(context, "Registrando");
-                      //FocusScope.of(context).unfocus();
-                    } else {
-                      setState(() {
-                        _validate = true;
-                      });
-                    }
-                  }),
-            ),
-          ],
+        Expanded(
+          child: roundedButton(
+              text: "Registrar",
+              color: MyColors.secondary,
+              textColor: MyColors.primaryLight,
+              padding: EdgeInsets.all(15),
+              radius: 30,
+              action: () {
+                if (_formKey.currentState.validate()) {
+                  print("Registrando");
+                  Provider.of<UserProvider>(context, listen: false).createUser(
+                      emailController.text.trim(),
+                      nameController.text.trim(),
+                      lastNameController.text.trim(),
+                      passwordController.text.trim());
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    createSnackBar(context1, "Registrando");
+                  });
+                  // showLoading.showLoadingDialog(context, "Registrando");
+                  //FocusScope.of(context).unfocus();
+                } else {
+                  setState(() {
+                    _validate = true;
+                  });
+                }
+              }),
         ),
       ],
     );

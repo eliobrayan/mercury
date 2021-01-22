@@ -11,8 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:mercury/misc/library/utils.dart';
 
 class MyDrawer extends StatefulWidget {
-  MyDrawer({Key key, this.pageController}) : super(key: key);
-  final PageController pageController;
+  MyDrawer({Key key}) : super(key: key);
 
   @override
   _MyDrawerState createState() => _MyDrawerState();
@@ -107,13 +106,29 @@ class _MyDrawerState extends State<MyDrawer> {
                 return Column(
                   children: [
                     ListTile(
+                      title: Text('Home'),
+                      leading: Icon(Icons.home),
+                      onTap: () {
+                        Provider.of<HomeViewModel>(context, listen: false)
+                            .jumpToPage(0);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Mi perfil'),
+                      leading: Icon(Icons.person),
+                      onTap: () {
+                        Provider.of<HomeViewModel>(context, listen: false)
+                            .jumpToPage(1);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
                       title: Text('Clientes'),
                       leading: Icon(Icons.person),
                       onTap: () {
-                        widget.pageController.jumpToPage(1);
-
                         Provider.of<HomeViewModel>(context, listen: false)
-                            .jumpToPage(1);
+                            .jumpToPage(2);
                         Navigator.pop(context);
                       },
                     ),
@@ -122,8 +137,14 @@ class _MyDrawerState extends State<MyDrawer> {
                       leading: Icon(Icons.person),
                       onTap: () {
                         Provider.of<HomeViewModel>(context, listen: false)
-                            .jumpToPage(2);
-                        widget.pageController.jumpToPage(2);
+                            .jumpToPage(3);
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Ventas'),
+                      leading: Icon(Icons.person),
+                      onTap: () {
                         Navigator.pop(context);
                       },
                     ),
@@ -137,6 +158,7 @@ class _MyDrawerState extends State<MyDrawer> {
                             content: "¿Estás seguro de cerrar sesión?",
                             textOk: "Si, quiero salir");
                         print("la respuesta es:$response");
+                        if (response == null) return;
                         if (response) {
                           Provider.of<AuthProvider>(context, listen: false)
                               .logout();
@@ -155,8 +177,7 @@ class _MyDrawerState extends State<MyDrawer> {
 }
 
 class MyBottomNavBar extends StatefulWidget {
-  MyBottomNavBar({Key key, this.pageController}) : super(key: key);
-  final PageController pageController;
+  MyBottomNavBar({Key key}) : super(key: key);
 
   @override
   _MyBottomNavBarState createState() => _MyBottomNavBarState();
@@ -172,9 +193,8 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
           child: BottomNavyBar(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             onItemSelected: (index) {
-              widget.pageController.animateToPage(index,
-                  duration: Duration(milliseconds: 500), curve: Curves.ease);
-              print("Current page:${widget.pageController.page.toInt()}");
+              /*widget.pageController.animateToPage(index,
+                  duration: Duration(milliseconds: 500), curve: Curves.ease);*/
 
               Provider.of<HomeViewModel>(context, listen: false)
                   .jumpToPage(index);
@@ -206,12 +226,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
 }
 
 class MyPageView extends StatefulWidget {
-  const MyPageView(
-      {Key key, this.pageController, this.indexLimitScroll, this.listPages})
-      : super(key: key);
-  final PageController pageController;
-  final int indexLimitScroll;
-  final List<Widget> listPages;
+  const MyPageView({Key key}) : super(key: key);
 
   @override
   _MyPageViewState createState() => _MyPageViewState();
@@ -223,12 +238,12 @@ class _MyPageViewState extends State<MyPageView> {
     return Consumer<HomeViewModel>(
       builder: (BuildContext context, value, Widget child) {
         return PageView(
-          controller: widget.pageController,
+          controller: value.pageController,
           onPageChanged: (index) {
             Provider.of<HomeViewModel>(context, listen: false)
                 .jumpToPage(index);
           },
-          children: widget.listPages,
+          children: value.listPages,
         );
       },
     );

@@ -10,14 +10,14 @@ import 'package:mercury/widgets/shared/inputs.dart';
 import 'package:mercury/widgets/shared/widgets.dart';
 import 'package:provider/provider.dart';
 
-class CustomersPage extends StatefulWidget {
-  const CustomersPage({Key key}) : super(key: key);
+class SalesPage extends StatefulWidget {
+  const SalesPage({Key key}) : super(key: key);
 
   @override
-  _CustomersPageState createState() => _CustomersPageState();
+  _SalesPageState createState() => _SalesPageState();
 }
 
-class _CustomersPageState extends State<CustomersPage> {
+class _SalesPageState extends State<SalesPage> {
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -46,7 +46,7 @@ class _CustomersPageState extends State<CustomersPage> {
           icon: Icon(Icons.add),
           foregroundColor: MyColors.primary,
           label: Text(
-            "Crear cliente",
+            "Nueva venta",
             style: TextStyle(color: MyColors.primary),
           ),
           onPressed: () async {
@@ -59,7 +59,7 @@ class _CustomersPageState extends State<CustomersPage> {
             );
             if (result is bool) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                createSnackBar(context, "Cliente creado");
+                createSnackBar(context, "Venta creada");
               });
             }
           },
@@ -86,19 +86,19 @@ class _CustomersPageState extends State<CustomersPage> {
           cardInformation(
               backgroundColor: MyColors.coral,
               title: "Hoy",
-              subtitle: "Total de clientes",
+              subtitle: "Total de ventas",
               info: "25",
               icon: Icon(Icons.person)),
           cardInformation(
               backgroundColor: MyColors.coral,
               title: "Este mes",
-              subtitle: "Total de clientes",
+              subtitle: "Total de ventas",
               info: "25",
               icon: Icon(Icons.person)),
           cardInformation(
               backgroundColor: MyColors.error,
               title: "Esta semana",
-              subtitle: "Total de clientes",
+              subtitle: "Total de ventas",
               info: "25",
               icon: Icon(Icons.person)),
           cardInformation(
@@ -223,18 +223,20 @@ class _CustomersPageState extends State<CustomersPage> {
                                                         "¿Estás seguro de eliminar a ${value.dirtyCustomers.elementAt(index).name}?",
                                                     textOk: "Si, eliminar");
                                             print("la respuesta es:$response");
+                                            if (response == null) return;
+
                                             if (response) {
                                               Provider.of<CRUDProvider>(context,
                                                       listen: false)
                                                   .deleteEntity(
-                                                      "customers",
+                                                      "sales",
                                                       value.dirtyCustomers
                                                           .elementAt(index)
                                                           .id);
                                               WidgetsBinding.instance
                                                   .addPostFrameCallback((_) {
-                                                createSnackBar(context,
-                                                    "Cliente eliminado");
+                                                createSnackBar(
+                                                    context, "Venta eliminada");
                                               });
                                             }
                                           })
@@ -255,7 +257,7 @@ class _CustomersPageState extends State<CustomersPage> {
                     if (value.state == ProviderStates.error) {
                       return Text("Error");
                     }
-                    return Text("Lista de clientes");
+                    return Text("Lista de ventas");
                   })
                 : Text("hola")
           ],

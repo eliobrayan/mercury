@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mercury/core/providers/customers_provider.dart';
+import 'package:mercury/core/providers/home_view_model.dart';
 import 'package:mercury/ui/views/customers/customers_page.dart';
-import 'package:mercury/ui/views/providers_page.dart';
-import 'package:mercury/ui/views/sales_page.dart';
+import 'package:mercury/ui/views/providers/providers_page.dart';
+
+import 'package:mercury/ui/views/sales/sales_page.dart';
+import 'package:mercury/ui/views/user/user_profile_page.dart';
 import 'package:mercury/widgets/home_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -18,11 +20,10 @@ class _HomePageState extends State<HomePage> {
 
   List<Widget> listPages = [
     BodyHome(),
-    ProvidersPage(),
+    UserProfilePage(),
     CustomersPage(),
+    ProvidersPage(),
     SalesPage(),
-    SalesPage(),
-    SalesPage()
   ];
   int currentPage = 0;
   @override
@@ -35,19 +36,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: Consumer<HomeViewModel>(
+          builder: (BuildContext context, value, Widget child) {
+            return Text(value.titleCurrentPage);
+          },
+        ),
       ),
-      bottomNavigationBar: MyBottomNavBar(
-        pageController: pageController,
-      ),
-      body: MyPageView(
-        pageController: pageController,
-        indexLimitScroll: 2,
-        listPages: listPages,
-      ),
-      drawer: MyDrawer(
-        pageController: pageController,
-      ),
+      bottomNavigationBar: MyBottomNavBar(),
+      body: MyPageView(),
+      drawer: MyDrawer(),
     );
   }
 }
